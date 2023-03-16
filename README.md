@@ -1,24 +1,3 @@
-# article_pubulish_stystem
+###This is an article column publishing project using vue3. x and typescript. 
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+###Use vue router to manage routes and use vuex to manage states.
