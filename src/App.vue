@@ -2,6 +2,7 @@
   <!-- container 是bootstrap的一个标识根组件，很多特性必须包裹在container中使用 -->
   <div class="container">
     <GlobalHeader :user="user"></GlobalHeader>
+    <LoginForm></LoginForm>
     <ColumnList :list="list"></ColumnList>
   </div>
 </template>
@@ -13,6 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 // 引入组件
 import ColumnList, { ColumnProps } from './components/ColumnList.vue'
 import GlobalHeader, { UserProps } from './components/GlobalHeader.vue'
+import LoginForm from './components/LoginForm.vue'
 
 // 声明死数据
 const testData: ColumnProps[] = [
@@ -50,7 +52,8 @@ export default defineComponent({
   name: 'App',
   components: {
     ColumnList,
-    GlobalHeader
+    GlobalHeader,
+    LoginForm
   },
   setup () {
     return {

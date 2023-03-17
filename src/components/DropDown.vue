@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 // 引入下拉框菜单钩子
 import useClickOutside from '@/hooks/useClickOutside'
