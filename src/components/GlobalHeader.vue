@@ -6,13 +6,31 @@
       <li class="list-inline-item"><a href="#" class="btn btn-outline-light my-2">注册</a></li>
     </ul>
     <ul v-else class="list-inline mb-0">
-      <li class="list-inline-item"><a href="#" class="btn btn-outline-light my-2">Hello,{{ user.name }}</a></li>
+      <li class="list-inline-item">
+        <!-- 在DropDown和DropDownItem中的都是是slot，因此逐层传递到了DropDownItem中 -->
+        <DropDown :title="`Hello,${user.name}`">
+          <DropDownItem>
+            <a href="#" class="dropdown-item">新建文章</a>
+          </DropDownItem>
+          <DropDownItem>
+            <a href="#" class="dropdown-item">编辑资料</a>
+          </DropDownItem>
+          <DropDownItem :disabled="true">
+            <a href="#" class="dropdown-item">退出登录</a>
+          </DropDownItem>
+        </DropDown>
+      </li>
     </ul>
   </nav>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+
+// 引入下拉菜单组件
+import DropDown from './DropDown.vue'
+import DropDownItem from './DropDownItem.vue'
+
 // 定义数据格式
 export interface UserProps {
   isLoading: boolean,
@@ -22,6 +40,7 @@ export interface UserProps {
 
 export default defineComponent({
   name: 'GlobalHeader',
+  components: { DropDown, DropDownItem },
   props: {
     user: {
       type: Object as PropType<UserProps>,
