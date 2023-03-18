@@ -18,34 +18,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ColumnList, { ColumnProps } from '../components/ColumnList.vue'
+import ColumnList from '../components/ColumnList.vue'
 
-// 声明死数据
-const testData: ColumnProps[] = [
-  {
-    id: 1,
-    title: 'test1的专栏',
-    description: '这是test1专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: '@/assets/logo.png'
-  },
-  {
-    id: 2,
-    title: 'test1的专栏',
-    description: '这是test1专栏，有一段非常有意思的简介，可以更新一下欧'
-  },
-  {
-    id: 1,
-    title: 'test1的专栏',
-    description: '这是test1专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: '@/assets/logo.png'
-  },
-  {
-    id: 1,
-    title: 'test1的专栏',
-    description: '这是test1专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: '@/assets/logo.png'
-  }
-]
+// 引入死数据
+import { testData } from '../testData'
 
 export default defineComponent({
   name: 'HomeView',

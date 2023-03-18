@@ -6,7 +6,7 @@
         <div class="acrd-body text-center">
           <h5 class="card-text">{{ colum.title }}</h5>
           <p class="card-text text-left">{{ colum.description }}</p>
-          <a href="#" class="btn btn-outline-primary">进入专栏</a>
+          <router-link :to="`/colum/${colum.id}`" class="btn btn-outline-primary">进入专栏</router-link>
         </div>
       </div>
     </div>
@@ -15,13 +15,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue'
-// 传入数据的接口定义
-export interface ColumnProps {
-  id: number,
-  title: string,
-  avatar?: string,
-  description: string
-}
+// 引入数据的接口定义
+import { ColumnProps } from '../testData'
 
 export default defineComponent({
   name: 'CloumList',
