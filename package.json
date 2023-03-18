@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.2.3",
+    "less-loader": "^11.1.0",
     "mitt": "^3.0.0",
     "vue": "^3.2.13"
   },

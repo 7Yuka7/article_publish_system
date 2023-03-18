@@ -19,17 +19,20 @@
       ></ValidateInput>
     </div>
     <template #submit>
-      <button type="submit" class="btn btn-danger">Submit</button>
+      <button type="submit" class="btn btn-danger" :style="{'marginRight':'5px'}">Submit</button>
+    </template>
+    <template #clearInput>
+      <button type="submit" class="btn btn-danger">clear</button>
     </template>
   </ValidateForm>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue'
-// 引入组件
-import ValidateForm from './ValidateForm.vue'
+// 引入表单组件
+import ValidateForm from '../components/ValidateForm.vue'
 // 引入input组件
-import ValidateInput, { RuleProp } from './ValidateInput.vue'
+import ValidateInput, { RuleProp } from '../components/ValidateInput.vue'
 
 export default defineComponent({
   name: 'LoginForm',
@@ -48,6 +51,7 @@ export default defineComponent({
       { type: 'range', min: { length: 6, message: '密码应不少于6位，且不能含有空格' } },
       { type: 'range', max: { length: 16, message: '密码应不大于16位，且不能含有空格' } }
     ]
+
     // 提交按钮的监听事件
     const onFormSubmit = (submit:boolean) => {
       console.log('1234', submit)

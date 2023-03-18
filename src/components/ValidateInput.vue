@@ -90,9 +90,19 @@ export default defineComponent({
     // 挂载的时候触发监听
     onMounted(() => {
       emitter.emit('form-item-created', validateInput)
+      // 清空方法也传入
+      emitter.emit('form-item-clear', clearInput)
     })
+
+    // 清空input的方法，该组件挂载的时候把这个回调函数调入
+    const clearInput = () => {
+      // 将input的值赋值为''即可
+      inputRef.val = ''
+    }
+
     return { ...toRefs(inputRef), validateInput, updateValue }
   }
+
 })
 </script>
 
