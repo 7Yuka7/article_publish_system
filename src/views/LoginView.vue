@@ -33,11 +33,18 @@ import { ref, defineComponent } from 'vue'
 import ValidateForm from '../components/ValidateForm.vue'
 // 引入input组件
 import ValidateInput, { RuleProp } from '../components/ValidateInput.vue'
+// 引入路由
+import { useRouter } from 'vue-router'
+// 引入store
+import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'LoginForm',
   components: { ValidateInput, ValidateForm },
   setup () {
+    // 路由 与 store的声明
+    const router = useRouter()
+    const store = useStore()
     // 双向数据绑定参数
     const emialValue = ref('')
     const passwordValue = ref('')
@@ -52,9 +59,13 @@ export default defineComponent({
       { type: 'range', max: { length: 16, message: '密码应不大于16位，且不能含有空格' } }
     ]
 
-    // 提交按钮的监听事件
+    // 提交按钮的监听事件 -- 转跳到首页
     const onFormSubmit = (submit:boolean) => {
-      console.log('1234', submit)
+      // 如果验证通过 就跳转到路由 并修改store的格式（正常来讲的话应该是需要服务器返回数据的）
+      if (submit) {
+        store.commit('login')
+        router.push('/')
+      }
     }
 
     return { emailRules, emialValue, passwordValue, passwordRules, onFormSubmit }

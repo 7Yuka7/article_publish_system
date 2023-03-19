@@ -25,32 +25,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType, computed } from 'vue'
 
 // 引入下拉菜单组件
 import DropDown from './DropDown.vue'
 import DropDownItem from './DropDownItem.vue'
 
-// 定义数据格式
-export interface UserProps {
-  isLoading: boolean,
-  name?: string,
-  id?: number
-}
+// 引入store
+import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'GlobalHeader',
   components: { DropDown, DropDownItem },
-  props: {
-    user: {
-      type: Object as PropType<UserProps>,
-      required: true
-    }
+  setup () {
+    const store = useStore()
+    const user = computed(() => {
+      return store.state.user
+    })
+    return { user }
   }
-  // setup () {
-
-  //   return { }
-  // }
 })
 </script>
 

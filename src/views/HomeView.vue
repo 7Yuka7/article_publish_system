@@ -17,18 +17,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
+// 引入卡片组件
 import ColumnList from '../components/ColumnList.vue'
-
-// 引入死数据
-import { testData } from '../testData'
+// 引入store以及需要用到的数据结构
+import { useStore } from 'vuex'
+import { GlobalDataProps } from '../store'
 
 export default defineComponent({
   name: 'HomeView',
   components: { ColumnList },
   setup () {
+    const store = useStore<GlobalDataProps>()
+    const list = computed(() => {
+      return store.state.colums
+    })
     return {
-      list: testData
+      list
     }
   }
 })
