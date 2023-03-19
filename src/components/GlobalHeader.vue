@@ -10,12 +10,12 @@
         <!-- 在DropDown和DropDownItem中的都是是slot，因此逐层传递到了DropDownItem中 -->
         <DropDown :title="`Hello,${user.name}`">
           <DropDownItem>
-            <a href="#" class="dropdown-item">新建文章</a>
-          </DropDownItem>
-          <DropDownItem>
-            <a href="#" class="dropdown-item">编辑资料</a>
+            <router-link to="/create" class="dropdown-item">新建文章</router-link>
           </DropDownItem>
           <DropDownItem :disabled="true">
+            <a href="#" class="dropdown-item">编辑资料</a>
+          </DropDownItem>
+          <DropDownItem >
             <a href="#" class="dropdown-item">退出登录</a>
           </DropDownItem>
         </DropDown>
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from 'vue'
+import { defineComponent, computed } from 'vue'
 
 // 引入下拉菜单组件
 import DropDown from './DropDown.vue'

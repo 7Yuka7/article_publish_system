@@ -48,7 +48,8 @@ export default defineComponent({
     // 双向数据绑定参数
     const emialValue = ref('')
     const passwordValue = ref('')
-    // props数据
+
+    // props数据验证
     const emailRules:RuleProp[] = [
       { type: 'required', message: '邮箱地址不能为空' },
       { type: 'email', message: '请输入正确的邮箱地址' }

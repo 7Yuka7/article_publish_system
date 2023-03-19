@@ -38,11 +38,13 @@ export default defineComponent({
   setup (props, context) {
     let funcArr: ValidateFunc[] = []
     let clearArr: ClearFunc[] = []
+
     // 点击提交的时候，循环调用数组中的方法
     const submitForm = () => {
       const result = funcArr.map(func => func()).every(result => result)
       context.emit('form-submit', result)
     }
+
     // 监听器发布事件以及组件消失时取消事件的监听
     const callback = (func: ValidateFunc) => {
       funcArr.push(func)

@@ -18,11 +18,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 // 引入路由信息
 import { useRoute } from 'vue-router'
-// 引入死数据
-import { testData, testPosts } from '../testData'
+// 引入仓库以及数据格式
+import { useStore } from 'vuex'
+import { GlobalDataProps } from '../store'
 // 引入文章组件
 import PostList from '@/components/PostList.vue'
 
@@ -30,12 +31,19 @@ export default defineComponent({
   name: 'ColumDetail',
   components: { PostList },
   setup () {
+    // 路由和仓库
     const route = useRoute()
+    const store = useStore<GlobalDataProps>()
     // 获取当前params携带的id
     const currentId = +route.params.id
-    // 从死数据中获取要展示的数据
-    const colum = testData.find(c => c.id === currentId)
-    const list = testPosts.filter(item => item.columnId === currentId)
+
+    // 从store中获取要展示的数据
+    const colum = computed(() => {
+      return store.getters.getColumById(currentId)
+    })
+    const list = computed(() => {
+      return store.getters.getPostsById(currentId)
+    })
     return {
       colum,
       list

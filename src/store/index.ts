@@ -7,6 +7,7 @@ interface UserProps {
   isLoading: boolean,
   name?: string,
   id?: number
+  columnId?: number
 }
 export interface GlobalDataProps {
   colums: ColumnProps[],
@@ -19,14 +20,27 @@ const store = createStore<GlobalDataProps>({
     //
   },
   mutations: {
+    // 登录
     login (state) {
-      state.user = { ...state.user, isLoading: true, name: 'yuka' }
+      state.user = { ...state.user, isLoading: true, name: 'yuka', columnId: 1 }
+    },
+    // 创建新的文章
+    createPost (state, value) {
+      state.posts.push(value)
     }
   },
   state: {
     colums: testData,
     posts: testPosts,
-    user: { isLoading: false }
+    user: { isLoading: true, name: 'yuka', columnId: 1 }
+  },
+  getters: {
+    getColumById: (state) => (currentId:number) => {
+      return state.colums.find(c => c.id === currentId)
+    },
+    getPostsById: (state) => (currentId:number) => {
+      return state.posts.filter(item => item.columnId === currentId)
+    }
   }
 })
 

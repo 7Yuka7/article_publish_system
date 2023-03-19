@@ -1,8 +1,9 @@
 <template>
   <div class="validate-input-container">
-    <input class="form-control" aria-describedby="emailHelp" :value="val" @blur="validateInput"
+    <input v-if="tag !== 'textarea'" class="form-control" aria-describedby="emailHelp" :value="val" @blur="validateInput"
       :class="{ 'is-invalid': error }" @input="updateValue" v-bind="$attrs">
-
+    <textarea v-else class="form-control"  :value="val" @blur="validateInput"
+      :class="{ 'is-invalid': error }" @input="updateValue" v-bind="$attrs"></textarea>
     <span v-if="error" class="invalid-feedback">{{ message }}</span>
   </div>
 </template>
@@ -11,13 +12,16 @@
 import { defineComponent, PropType, reactive, toRefs, onMounted } from 'vue'
 // 引入事件监听
 import { emitter } from './ValidateForm.vue'
-
+// 规则
 export interface RuleProp {
   type: 'required' | 'email' | 'range',
   message?: string,
   min?: { length: number, message: string }
   max?: { length: number, message: string }
 }
+
+// 需要input还是textarea
+export type TagType = 'input' | 'textarea'
 
 export default defineComponent({
   name: 'ValidateInput',
@@ -27,7 +31,12 @@ export default defineComponent({
     rules: {
       type: Array as PropType<RuleProp[]>
     },
-    modelValue: String
+    modelValue: String,
+    // 判断是input框还是textarea,没传入就是默认input
+    tag: {
+      type: String as PropType<TagType>,
+      default: 'input'
+    }
   },
   setup (props, context) {
     // 验证邮箱的正则表达式
@@ -38,6 +47,7 @@ export default defineComponent({
       error: false,
       message: ''
     })
+
     // 手动实现v-model
     const updateValue = (e: Event) => {
       const targetValue = (e.target as HTMLInputElement).value
