@@ -32,7 +32,7 @@ const store = createStore<GlobalDataProps>({
   state: {
     colums: testData,
     posts: testPosts,
-    user: { isLoading: true, name: 'yuka', columnId: 1 }
+    user: { isLoading: false, name: 'yuka', columnId: 1 }
   },
   getters: {
     getColumById: (state) => (currentId:number) => {
