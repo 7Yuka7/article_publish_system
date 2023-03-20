@@ -17,21 +17,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, onMounted } from 'vue'
 // 引入卡片组件
-import ColumnList from '../components/ColumnList.vue'
+import ColumnList from '@/components/ColumnList.vue'
 // 引入store以及需要用到的数据结构
 import { useStore } from 'vuex'
-import { GlobalDataProps } from '../store'
+import { GlobalDataProps } from '@/store'
 
 export default defineComponent({
   name: 'HomeView',
   components: { ColumnList },
   setup () {
     const store = useStore<GlobalDataProps>()
+    // 从store中获取专栏数据
     const list = computed(() => {
       return store.state.colums
     })
+    // 挂载函数
+    onMounted(() => {
+      // 派发请求
+      getData()
+    })
+    // 请求数据函数
+    const getData = () => {
+      store.dispatch('fetchColumnData')
+    }
+
+    // 返回数据
     return {
       list
     }

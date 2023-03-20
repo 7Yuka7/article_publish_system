@@ -20,8 +20,8 @@ const routes: Array<RouteRecordRaw> = [
   },
   // 文章详情界面
   {
-    path: '/colum/:id',
-    name: 'colum',
+    path: '/columns/:id',
+    name: 'columns',
     component: () => import('@/views/ColumDetail.vue')
   },
   // 发布文章界面
@@ -37,6 +37,7 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
 // 此处可以设置路由守卫
 router.beforeEach((to, from, next) => {
   if (to.meta.requireLogin && !store.state.user.isLoading) {

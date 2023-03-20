@@ -82,7 +82,7 @@ export default defineComponent({
           // 将新创建的数据传入仓库中，并转跳至column页
           store.commit('createPost', newPosts)
           router.push({
-            name: 'colum',
+            name: 'columns',
             params: {
               id: columnId
             }
