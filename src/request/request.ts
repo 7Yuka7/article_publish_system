@@ -1,5 +1,7 @@
 // axios的二次封装
 import axios from 'axios'
+// 引入isLoading判断
+import store from '@/store'
 
 const requests = axios.create({
   baseURL: 'http://apis.imooc.com/api/',
@@ -15,15 +17,19 @@ requests.interceptors.request.use((config) => {
   } else {
     config.data = { ...config.data, icode: '30009341E6B96885' }
   }
+  // isLoding设置为true
+  store.state.isLoading = true
   // 交出经过处理的请求头
   return config
 })
 
 // 响应拦截器 -- 等会在设置
-// requests.interceptors.response.use((res) => {
-//   return res.data
-// }, (err) =>{
-
-// })
+requests.interceptors.response.use((res) => {
+  store.state.isLoading = false
+  return res
+}, (err) => {
+  // 错误信息给出
+  return err
+})
 
 export default requests

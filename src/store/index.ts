@@ -1,8 +1,9 @@
-import { createStore } from 'vuex'
+import { createStore, Commit } from 'vuex'
 // 从死数据中引入数据格式以及内容
 import { ColumnProps, testData, PostProps, testPosts } from '../testData'
 // 引入接口
 import { reqFetchColumn, reqFetchSingleColum, reqFetchPost } from '@/request/index'
+import { Axios, AxiosResponse } from 'axios'
 
 // 定义收到的数据格式 -- 全面去除死数据
 // 一些基础的数据格式，被多次复用，可以被扩展
@@ -60,13 +61,19 @@ interface UserProps {
 }
 // 设置仓库的数据格式
 export interface GlobalDataProps {
-  colums: IHomeColumData[],
-  posts: IPostData[],
-  user: UserProps
+  isLoading: boolean, // 是否加载
+  colums: IHomeColumData[], // 专栏卡片数据
+  posts: IPostData[], // 文章数据
+  user: UserProps // 用户数据
 }
-
+// 抽象的actions发送函数
+// function getAndCommit = async (reqFunction:()=>Promise<AxiosResponse<any,any>>, mutationName:string, commit:Commit) => {
+//   const { data } = await reqFunction()
+//   commit(mutationName, data)
+// }
 const store = createStore<GlobalDataProps>({
   actions: {
+    // 以下的actions代码可以抽象到一个函数中
     // ****异步获取首页专栏数据
     async fetchColumnData ({ commit }) {
       try {
@@ -123,6 +130,7 @@ const store = createStore<GlobalDataProps>({
   },
 
   state: {
+    isLoading: false,
     colums: [],
     posts: [],
     user: { isLoading: false, name: 'yuka', columnId: 1 }
