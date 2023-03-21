@@ -18,21 +18,34 @@ requests.interceptors.request.use((config) => {
     config.data = { ...config.data, icode: '30009341E6B96885' }
   }
   // isLoding设置为true -- 加载动画开启
-  store.state.isLoading = true
+  store.commit('SETLOADING', true)
+
+  // 在每次请求前都重置错误
+  store.commit('SETERROR', { status: false, message: '' })
+
   // 设置token -- 从本地取或者为undefined(undefined不会随着响应头发送)
-  config.headers.Authorization = `Bearer ${localStorage.getItem('token')}` || undefined
-  console.log(config)
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+
   // 交出经过处理的请求头
   return config
 })
 
-// 响应拦截器 -- 等会在设置
+// 响应拦截器
 requests.interceptors.response.use((res) => {
-  store.state.isLoading = false
+  // 关闭加载动画
+  store.commit('SETLOADING', false)
   return res
 }, (err) => {
-  // 错误信息给出
-  return err
+  // 将错误信息存储到store中，后续在message组件中给出提示
+  store.commit('SETERROR', { status: true, message: err.response.data.error })
+  // 将是否在加载改为false --> 取消加载动画
+  store.commit('SETLOADING', false)
+
+  // 返回错误信息
+  return Promise.reject(err.response.data.error)
 })
 
 export default requests

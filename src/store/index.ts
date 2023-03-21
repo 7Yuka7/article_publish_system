@@ -1,8 +1,8 @@
 import { createStore, Commit } from 'vuex'
 // 引入接口
 import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetchUser } from '@/request/index'
-// 引入请求axios的实例
-import requests from '@/request/request'
+// 引入请求axios的实例 -- 后续在request的响应拦截器中统一设置了token的发送与否
+// import requests from '@/request/request'
 
 // 定义收到的数据格式 -- 全面去除死数据
 // 一些基础的数据格式，被多次复用，可以被扩展
@@ -52,7 +52,7 @@ interface PostData {
 export type IPostData = Partial<PostData>
 //
 
-// 用户数据格式
+// ***************用户数据格式********************
 export interface UserProps {
   isLogin: boolean,
   avatar?: ImageData,
@@ -62,8 +62,16 @@ export interface UserProps {
   nickName?: string,
   _id?: number
 }
-// 设置仓库的数据格式
+
+// ***************错误信息格式********************
+interface ErrorProps {
+  status: boolean,
+  message?: string
+}
+
+// ***************设置仓库的数据格式*****************
 export interface GlobalDataProps {
+  error: ErrorProps,
   token: string, // 令牌
   isLoading: boolean, // 是否加载
   colums: IHomeColumData[], // 专栏卡片数据
@@ -109,23 +117,15 @@ const store = createStore<GlobalDataProps>({
     // ****权限验证
     // 登录post请求
     async potLogin ({ commit }, value) {
-      try {
-        const result = await reqPutLogin(value)
-        commit('POSTLOGIN', result.data)
-      } catch (error) {
-        console.log('登录请求失败', error)
-      }
+      const result = await reqPutLogin(value)
+      commit('POSTLOGIN', result.data)
     },
     // 根据token获取用户信息请求
     async fetchCurrentUser ({ commit }) {
-      try {
-        const result = await reqFetchUser()
-        console.log(result)
-        commit('FETCHCURRENTUSER', result.data)
-      } catch (error) {
-        console.error('获取用户信息失败', error)
-      }
+      const result = await reqFetchUser()
+      commit('FETCHCURRENTUSER', result.data)
     },
+    // 这里联合action问题很大，因为我在每个action中都已经处理了错误，因此返回的都不是error --> 解决方法，在对应的actions中直接发送，而不是用try-catch包裹
     // 联合两个action -- 先登录，后转跳到首页需要获取信息
     // postAndFtechUser ({ dispatch }, value) {
     //   // 收到的value是登录的账号密码
@@ -134,12 +134,20 @@ const store = createStore<GlobalDataProps>({
     //   })
     // }
     async postAndFtechUser ({ dispatch }, value) {
-      await dispatch('potLogin', value)
-      await dispatch('fetchCurrentUser')
+      try {
+        await dispatch('potLogin', value)
+        await dispatch('fetchCurrentUser')
+      } catch (error) {
+        return error
+      }
     }
   },
 
   mutations: {
+    // 是否在加载中 -- 最好不要直接去store.state.isLoding直接去修改
+    SETLOADING (state, status) {
+      state.isLoading = status
+    },
     // 首页专栏
     FETCHCOLUMNDATA (state, value) {
       state.colums = value.data.list
@@ -153,6 +161,7 @@ const store = createStore<GlobalDataProps>({
     FETCHPOST (state, value) {
       state.posts = value.data.list
     },
+    // -------------------------------------------------------------
     // 登录信息获取token -- 并将token放置到本地存储，且设置到请求头中
     POSTLOGIN (state, value) {
       const { token } = value.data
@@ -165,6 +174,11 @@ const store = createStore<GlobalDataProps>({
     FETCHCURRENTUSER (state, value) {
       state.user = { isLogin: true, ...value.data }
     },
+    // 响应全局获取错误信息
+    SETERROR (state, value) {
+      state.error = { ...value }
+    },
+    // -------------------------------------------------------------
     // 以下为test ------------------------
     // 创建新的文章
     createPost (state, value) {
@@ -173,6 +187,7 @@ const store = createStore<GlobalDataProps>({
   },
 
   state: {
+    error: { status: false },
     // 初始的token从本次存储中找找看
     token: localStorage.getItem('token') || '',
     isLoading: false,

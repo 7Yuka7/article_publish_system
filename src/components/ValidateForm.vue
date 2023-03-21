@@ -36,25 +36,30 @@ export default defineComponent({
   // 自定义事件的传入
   emits: ['form-submit'],
   setup (props, context) {
+    // 函数数组中存放的应该是各个input的验证方法
     let funcArr: ValidateFunc[] = []
     let clearArr: ClearFunc[] = []
 
     // 点击提交的时候，循环调用数组中的方法
     const submitForm = () => {
+      // 一个一个验证input的合法性，全部合法就为true
       const result = funcArr.map(func => func()).every(result => result)
       context.emit('form-submit', result)
     }
 
     // 监听器发布事件以及组件消失时取消事件的监听
     const callback = (func: ValidateFunc) => {
+      // 将收到的方法放入数组中
       funcArr.push(func)
     }
-    //
+    // 清空方法
     const clearCallback = (func:ClearFunc) => {
       clearArr.push(func)
     }
+    // 监听到对应的事件就调用callback
     emitter.on('form-item-created', callback)
     emitter.on('form-item-clear', clearCallback)
+    // 取消事件的监听
     onUnmounted(() => {
       emitter.off('form-item-created', callback)
       emitter.off('form-item-clear', clearCallback)

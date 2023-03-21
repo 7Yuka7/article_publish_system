@@ -97,7 +97,7 @@ export default defineComponent({
       return true
     }
 
-    // 挂载的时候触发监听
+    // 挂载的时候触发监听 -- 将验证方法传入
     onMounted(() => {
       emitter.emit('form-item-created', validateInput)
       // 清空方法也传入

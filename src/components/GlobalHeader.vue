@@ -42,9 +42,11 @@ export default defineComponent({
     const user = computed(():UserProps => {
       return store.state.user
     })
-    // 挂载的时候发送请求查看是否有登录信息
+    // 挂载的时候，若本地有token则发送请求验证Token
     onMounted(() => {
-      store.dispatch('fetchCurrentUser')
+      if (localStorage.getItem('token')) {
+        store.dispatch('fetchCurrentUser')
+      }
     })
 
     // 返回数据

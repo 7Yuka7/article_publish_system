@@ -9,11 +9,13 @@
         <p v-if="text" class="text-info small">{{ text }}</p>
       </div>
     </div>
-  </teleport>>
+  </teleport>
 </template>
 
 <script lang="ts">
-import { defineComponent, onUnmounted } from 'vue'
+import { defineComponent } from 'vue'
+// 创建节点钩子函数
+import useDOMCreate from '@/hooks/useDOMCreate'
 
 export default defineComponent({
   name: 'LoaderView',
@@ -26,14 +28,7 @@ export default defineComponent({
     }
   },
   setup () {
-    // setup的执行时机在beforeMounted之前，因此可以操作DOM创建一个div
-    const node = document.createElement('div')
-    node.id = 'back'
-    document.body.appendChild(node)
-    // 组件被销毁之前移除该节点
-    onUnmounted(() => {
-      document.body.removeChild(node)
-    })
+    useDOMCreate('back')
     return {}
   }
 })
