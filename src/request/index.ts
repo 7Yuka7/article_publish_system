@@ -26,3 +26,23 @@ export const reqFetchPost = (id:string, currentPage?:string, pageSize?:string) =
     }
   })
 }
+
+// 发送登录信息
+export const reqPutLogin = (playLoad:{email:string, password: string}) => {
+  return requests({
+    url: '/user/login',
+    method: 'post',
+    data: {
+      // 记得解构，因为后端接口需要的是emial和password
+      ...playLoad
+    }
+  })
+}
+
+// 获取当前用户信息
+export const reqFetchUser = () => {
+  return requests({
+    url: '/user/current',
+    method: 'get'
+  })
+}

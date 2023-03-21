@@ -1,9 +1,8 @@
 import { createStore, Commit } from 'vuex'
-// 从死数据中引入数据格式以及内容
-import { ColumnProps, testData, PostProps, testPosts } from '../testData'
 // 引入接口
-import { reqFetchColumn, reqFetchSingleColum, reqFetchPost } from '@/request/index'
-import { Axios, AxiosResponse } from 'axios'
+import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetchUser } from '@/request/index'
+// 引入请求axios的实例
+import requests from '@/request/request'
 
 // 定义收到的数据格式 -- 全面去除死数据
 // 一些基础的数据格式，被多次复用，可以被扩展
@@ -47,20 +46,25 @@ interface PostData {
   image: ImageData,
   key: number,
   title: string,
-  _id: string
+  _id: string,
+  content?: string
 }
 export type IPostData = Partial<PostData>
 //
 
 // 用户数据格式
-interface UserProps {
-  isLoading: boolean,
-  name?: string,
-  id?: number
-  columnId?: number
+export interface UserProps {
+  isLogin: boolean,
+  avatar?: ImageData,
+  column?: string,
+  description?: string,
+  emial?: string,
+  nickName?: string,
+  _id?: number
 }
 // 设置仓库的数据格式
 export interface GlobalDataProps {
+  token: string, // 令牌
   isLoading: boolean, // 是否加载
   colums: IHomeColumData[], // 专栏卡片数据
   posts: IPostData[], // 文章数据
@@ -101,6 +105,37 @@ const store = createStore<GlobalDataProps>({
       } catch (error) {
         console.error('获取个人发表文章信息失败', error)
       }
+    },
+    // ****权限验证
+    // 登录post请求
+    async potLogin ({ commit }, value) {
+      try {
+        const result = await reqPutLogin(value)
+        commit('POSTLOGIN', result.data)
+      } catch (error) {
+        console.log('登录请求失败', error)
+      }
+    },
+    // 根据token获取用户信息请求
+    async fetchCurrentUser ({ commit }) {
+      try {
+        const result = await reqFetchUser()
+        console.log(result)
+        commit('FETCHCURRENTUSER', result.data)
+      } catch (error) {
+        console.error('获取用户信息失败', error)
+      }
+    },
+    // 联合两个action -- 先登录，后转跳到首页需要获取信息
+    // postAndFtechUser ({ dispatch }, value) {
+    //   // 收到的value是登录的账号密码
+    //   return dispatch('potLogin', value).then(() => {
+    //     return dispatch('fetchCurrentUser')
+    //   })
+    // }
+    async postAndFtechUser ({ dispatch }, value) {
+      await dispatch('potLogin', value)
+      await dispatch('fetchCurrentUser')
     }
   },
 
@@ -118,11 +153,19 @@ const store = createStore<GlobalDataProps>({
     FETCHPOST (state, value) {
       state.posts = value.data.list
     },
-    // 以下为test ------------------------
-    // 登录
-    login (state) {
-      state.user = { ...state.user, isLoading: true, name: 'yuka', columnId: 1 }
+    // 登录信息获取token -- 并将token放置到本地存储，且设置到请求头中
+    POSTLOGIN (state, value) {
+      const { token } = value.data
+      state.token = token
+      localStorage.setItem('token', token)
+      // 拿到token在axios中设置请求头(感觉这步应该在拦截器中进行)
+      // requests.defaults.headers.common.Authorization = `Bearer ${token}`
     },
+    // 获取用户信息
+    FETCHCURRENTUSER (state, value) {
+      state.user = { isLogin: true, ...value.data }
+    },
+    // 以下为test ------------------------
     // 创建新的文章
     createPost (state, value) {
       state.posts.push(value)
@@ -130,10 +173,12 @@ const store = createStore<GlobalDataProps>({
   },
 
   state: {
+    // 初始的token从本次存储中找找看
+    token: localStorage.getItem('token') || '',
     isLoading: false,
     colums: [],
     posts: [],
-    user: { isLoading: false, name: 'yuka', columnId: 1 }
+    user: { isLogin: false }
   },
 
   getters: {

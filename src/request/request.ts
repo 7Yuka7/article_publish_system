@@ -17,8 +17,11 @@ requests.interceptors.request.use((config) => {
   } else {
     config.data = { ...config.data, icode: '30009341E6B96885' }
   }
-  // isLoding设置为true
+  // isLoding设置为true -- 加载动画开启
   store.state.isLoading = true
+  // 设置token -- 从本地取或者为undefined(undefined不会随着响应头发送)
+  config.headers.Authorization = `Bearer ${localStorage.getItem('token')}` || undefined
+  console.log(config)
   // 交出经过处理的请求头
   return config
 })

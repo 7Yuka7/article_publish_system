@@ -40,10 +40,10 @@ const router = createRouter({
 
 // 此处可以设置路由守卫
 router.beforeEach((to, from, next) => {
-  if (to.meta.requireLogin && !store.state.user.isLoading) {
+  if (to.meta.requireLogin && !store.state.user.isLogin) {
     // 访问的页面需要登录，且目前没登陆，转跳到登录页面
     next('/login')
-  } else if (to.meta.redirectAlreadyLogin && store.state.user.isLoading) {
+  } else if (to.meta.redirectAlreadyLogin && store.state.user.isLogin) {
     // 已经登录了，在进入login页面，直接跳转到首页
     next('/')
   } else {

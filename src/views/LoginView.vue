@@ -64,7 +64,11 @@ export default defineComponent({
     const onFormSubmit = (submit:boolean) => {
       // 如果验证通过 就跳转到路由 并修改store的格式（正常来讲的话应该是需要服务器返回数据的）
       if (submit) {
-        store.commit('login')
+        const playLoad = {
+          email: emialValue.value,
+          password: passwordValue.value
+        }
+        store.dispatch('postAndFtechUser', playLoad)
         router.push('/')
       }
     }

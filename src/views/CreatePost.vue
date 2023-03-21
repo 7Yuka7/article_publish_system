@@ -41,8 +41,7 @@ import ValidateInput, { RuleProp } from '@/components/ValidateInput.vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 // 引入数据格式
-import { GlobalDataProps } from '@/store/index'
-import { PostProps } from '@/testData'
+import { GlobalDataProps, IPostData } from '@/store/index'
 
 export default defineComponent({
   name: 'CreatePost',
@@ -68,23 +67,22 @@ export default defineComponent({
     const onFormSubmit = (result:boolean) => {
       // 表单验证通过
       if (result) {
-        const { columnId } = store.state.user
-        console.log(columnId)
+        const { column } = store.state.user
         // type gaurd
-        if (columnId) {
-          const newPosts:PostProps = {
-            id: new Date().getTime(),
+        if (column) {
+          const newPosts:IPostData = {
+            _id: new Date().getTime().toString(),
             title: titleValue.value,
             content: paperValue.value,
-            columnId,
-            createdAt: new Date().toLocaleString()
+            column,
+            createAt: new Date().toLocaleString()
           }
           // 将新创建的数据传入仓库中，并转跳至column页
           store.commit('createPost', newPosts)
           router.push({
             name: 'columns',
             params: {
-              id: columnId
+              id: column
             }
           }
           )
