@@ -64,7 +64,7 @@ export default defineComponent({
         // 如果有错误，result就会返回具体的错误信息
         if (typeof result !== 'string') {
           // 登录成功
-          createMessage('登录成功，2s后转调至主页', 'success')
+          createMessage('登录成功，2s后跳转至主页', 'success', 2000)
           setTimeout(() => {
             router.push('/')
           }, 2000)

@@ -10,13 +10,15 @@
         <!-- 在DropDown和DropDownItem中的都是是slot，因此逐层传递到了DropDownItem中 -->
         <DropDown :title="`Hello,${user.nickName}`">
           <DropDownItem>
+            <!-- 点击新建文章转跳至 -->
             <router-link to="/create" class="dropdown-item">新建文章</router-link>
           </DropDownItem>
           <DropDownItem :disabled="true">
-            <a href="#" class="dropdown-item">编辑资料</a>
+            <a class="dropdown-item">编辑资料</a>
           </DropDownItem>
           <DropDownItem >
-            <a href="#" class="dropdown-item">退出登录</a>
+            <!-- 退出登录，清空本地存储token -->
+            <button class="dropdown-item" @click.prevent="logOut">退出登录</button>
           </DropDownItem>
         </DropDown>
       </li>
@@ -31,6 +33,8 @@ import DropDown from './DropDown.vue'
 import DropDownItem from './DropDownItem.vue'
 // 引入store
 import { useStore } from 'vuex'
+// 引入路由
+import { useRouter } from 'vue-router'
 // 引入数据格式
 import { UserProps } from '@/store'
 
@@ -39,6 +43,7 @@ export default defineComponent({
   components: { DropDown, DropDownItem },
   setup () {
     const store = useStore()
+    const router = useRouter()
     const user = computed(():UserProps => {
       return store.state.user
     })
@@ -49,8 +54,14 @@ export default defineComponent({
       }
     })
 
+    // 退出登录 1.清空本地token 2.转跳至首页并刷新(取消)
+    const logOut = () => {
+      localStorage.removeItem('token')
+      router.go(0)
+    }
+
     // 返回数据
-    return { user }
+    return { user, logOut }
   }
 })
 </script>

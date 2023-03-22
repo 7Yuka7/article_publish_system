@@ -20,6 +20,7 @@ import LoaderView from '@/components/LoaderView.vue' // 加载中组件
 import createMessage from '@/components/createMessage' // 引入创建消息栏组件的方法
 // 引入仓库 -- 主要是为了isLoading
 import store from './store'
+
 export default defineComponent({
   name: 'App',
   components: {
@@ -44,12 +45,11 @@ export default defineComponent({
         createMessage(message, 'error', 2000)
       }
     })
-    // 挂载
+    // 挂载的时候检查以下登录状态
     onMounted(() => {
-      // const instance = createMessage('hello', 'default')
-      // setTimeout(() => {
-      //   instance.destory()
-      // }, 2000)
+      // if (localStorage.getItem('token')) {
+      //   store.dispatch('fetchCurrentUser')
+      // }
     })
     // 返回数据
     return {
@@ -61,5 +61,4 @@ export default defineComponent({
 })
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

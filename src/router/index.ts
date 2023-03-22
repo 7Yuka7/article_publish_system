@@ -37,6 +37,13 @@ const routes: Array<RouteRecordRaw> = [
     name: 'singup',
     component: () => import('@/views/SingUp.vue'),
     meta: { redirectAlreadyLogin: true } // 已经登录了就不需要注册了
+  },
+  // 上传界面
+  {
+    path: '/upload',
+    name: 'upload',
+    component: () => import('@/views/UploaderView.vue'),
+    meta: { requireLogin: true }
   }
 ]
 

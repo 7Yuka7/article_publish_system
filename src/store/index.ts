@@ -195,7 +195,7 @@ const store = createStore<GlobalDataProps>({
     isLoading: false,
     colums: [],
     posts: [],
-    user: { isLogin: false }
+    user: { isLogin: !!localStorage.getItem('token') } // 两次取反转换成boolean了
   },
 
   getters: {
