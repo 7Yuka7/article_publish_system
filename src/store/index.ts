@@ -125,7 +125,9 @@ const store = createStore<GlobalDataProps>({
       const result = await reqFetchUser()
       commit('FETCHCURRENTUSER', result.data)
     },
+
     // 这里联合action问题很大，因为我在每个action中都已经处理了错误，因此返回的都不是error --> 解决方法，在对应的actions中直接发送，而不是用try-catch包裹
+
     // 联合两个action -- 先登录，后转跳到首页需要获取信息
     // postAndFtechUser ({ dispatch }, value) {
     //   // 收到的value是登录的账号密码

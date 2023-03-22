@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch } from 'vue'
+import { defineComponent, computed, watch, onMounted } from 'vue'
 // 引入bootstrap库
 import 'bootstrap/dist/css/bootstrap.min.css'
 // 引入组件
@@ -35,15 +35,22 @@ export default defineComponent({
     const error = computed(() => {
       return store.state.error
     })
+
     // 使用watch监视是否有错误，有错误-->弹出message组件
     watch(() => error.value.status, () => {
       const { status, message } = error.value
       // 存在error.message的时候才弹出
       if (status && message) {
-        createMessage(message, 'error')
+        createMessage(message, 'error', 2000)
       }
     })
-
+    // 挂载
+    onMounted(() => {
+      // const instance = createMessage('hello', 'default')
+      // setTimeout(() => {
+      //   instance.destory()
+      // }, 2000)
+    })
     // 返回数据
     return {
       isLoading,
@@ -54,6 +61,5 @@ export default defineComponent({
 })
 </script>
 
-<style>
-
+<style lang="less" scoped>
 </style>

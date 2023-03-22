@@ -14,10 +14,11 @@ import { defineComponent, PropType, reactive, toRefs, onMounted } from 'vue'
 import { emitter } from './ValidateForm.vue'
 // 规则
 export interface RuleProp {
-  type: 'required' | 'email' | 'range',
+  type: 'required' | 'email' | 'range' | 'isIdentical',
   message?: string,
   min?: { length: number, message: string }
   max?: { length: number, message: string }
+  isRepeate?: () => boolean
 }
 
 // 需要input还是textarea
@@ -59,7 +60,7 @@ export default defineComponent({
     const validateInput = () => {
       // 循环props验证规则
       if (props.rules) {
-        // 使用every数组方法，只有当返回值都为true时，allPassed才为true
+        // 使用every数组方法，只有当返回值（passed）都为true时，allPassed才为true
         const allPassed = props.rules.every(rule => {
           // 临时的flag
           let passed = true
@@ -84,13 +85,24 @@ export default defineComponent({
               }
               break
             }
+            case 'isIdentical': {
+              // 需要判断两次输入密码是否相同
+              if (rule.isRepeate) {
+                // 传入了对应的方法
+                passed = rule.isRepeate()
+              } else {
+                // 没有传入对应的方法直接返回true
+                passed = true
+              }
+              break
+            }
 
             default:
               break
           }
           return passed
         })
-        // 当验证没有通过即allPassed为false时，说明有错误，显示error
+        // 当验证没有通过,即allPassed为false时，说明有错误，显示error
         inputRef.error = !allPassed
         return allPassed
       }

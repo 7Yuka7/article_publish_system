@@ -1,6 +1,6 @@
 <template>
   <teleport to='#message'>
-    <div class="alert message-info fixed-top w-50 mx-auto d-flex justify-content-between mt-2" :class="classObject" v-if="isVisible">
+    <div class="alert message-info fixed-top mx-auto d-flex justify-content-between mt-2" :class="classObject" v-if="isVisible">
       <span>{{ message }}</span>
       <button type="button" class="btn-close"  aria-label="Close" @click.prevent="hide"></button>
     </div>
@@ -53,4 +53,8 @@ export default defineComponent({
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.alert{
+  width: 30%;
+}
+</style>

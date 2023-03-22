@@ -30,6 +30,13 @@ const routes: Array<RouteRecordRaw> = [
     name: 'create',
     component: () => import('@/views/CreatePost.vue'),
     meta: { requireLogin: true }
+  },
+  // 注册界面
+  {
+    path: '/singup',
+    name: 'singup',
+    component: () => import('@/views/SingUp.vue'),
+    meta: { redirectAlreadyLogin: true } // 已经登录了就不需要注册了
   }
 ]
 

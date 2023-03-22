@@ -46,3 +46,14 @@ export const reqFetchUser = () => {
     method: 'get'
   })
 }
+
+// 注册
+export const reqPostSignup = (playLoad:{email:string, nickName:string, password:string}) => {
+  return requests({
+    url: '/users',
+    method: 'post',
+    data: {
+      ...playLoad
+    }
+  })
+}

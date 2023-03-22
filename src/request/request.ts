@@ -45,7 +45,7 @@ requests.interceptors.response.use((res) => {
   store.commit('SETLOADING', false)
 
   // 返回错误信息
-  return Promise.reject(err.response.data.error)
+  return Promise.reject(err.response.data)
 })
 
 export default requests

@@ -1,19 +1,22 @@
 <template>
-  <form class="validate-form-container">
+  <form class="validate-form-container" >
+    <!-- 表单的input项 -->
     <slot></slot>
+    <!-- 表单的提交选项 -->
+    <!-- 提交选项 -->
     <div class="option-container">
       <div class="submit-area" @click.prevent="submitForm">
         <slot name="submit">
-          <button type="submit" class="btn btn-primary">登录</button>
+          <button type="submit" class="btn btn-primary w-100">登录</button>
         </slot>
       </div>
+      <!-- 清空表单 -->
       <div class="clear-area" @click.prevent="clearInputs">
         <slot name="clearInput">
-          <button type="submit" class="btn btn-primary">清空</button>
+          <button type="submit" class="btn btn-danger w-100">清空输入</button>
         </slot>
       </div>
     </div>
-
   </form>
 </template>
 
@@ -80,7 +83,20 @@ export default defineComponent({
 </script>
 
 <style scoped lang="less">
-.option-container{
+.validate-form-container{
+  width: 40%;
+  margin: auto;
+  padding: 20px;
+  border: 3px solid rgba(0,0,0,0.2);
+  border-radius: 3%;
+  margin-bottom: 15px;
+  .option-container{
   display: flex;
+  justify-content: space-between;
+  div{
+    width: 45%;
+  }
 }
+}
+
 </style>

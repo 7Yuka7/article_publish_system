@@ -9,10 +9,10 @@
       <ValidateInput :rules="passwordRules" v-model="passwordValue" placeholder="请输入你的密码" type="password"></ValidateInput>
     </div>
     <template #submit>
-      <button type="submit" class="btn btn-danger" :style="{ 'marginRight': '5px' }">Submit</button>
+      <button type="submit" class="btn btn-primary w-100" :style="{ 'marginRight': '5px' }">Submit</button>
     </template>
     <template #clearInput>
-      <button type="submit" class="btn btn-danger">clear</button>
+      <button type="submit" class="btn btn-danger w-100">clear</button>
     </template>
   </ValidateForm>
 </template>
