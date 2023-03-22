@@ -59,9 +59,9 @@ export const reqPostSignup = (playLoad:{email:string, nickName:string, password:
 }
 
 // 上传文件
-export const reqPostFile = (fileData:FormData) => {
+export const reqPostFile = (url:string, fileData:FormData) => {
   return requests({
-    url: '/upload',
+    url,
     method: 'post',
     data: fileData,
     headers: {

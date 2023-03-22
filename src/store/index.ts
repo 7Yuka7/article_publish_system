@@ -7,9 +7,10 @@ import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetc
 // 定义收到的数据格式 -- 全面去除死数据
 // 一些基础的数据格式，被多次复用，可以被扩展
 // avatar数据格式
-interface ImageData {
-  url: string,
-  _id: string
+export interface ImageData {
+  url?: string,
+  _id?: string,
+  createdAt?: string
 }
 // interface BasicFormate {
 //   author: string,
@@ -67,6 +68,13 @@ export interface UserProps {
 interface ErrorProps {
   status: boolean,
   message?: string
+}
+
+// ***************上传图片响应格式********************
+export interface ResponseType<P = object> {
+  code: number,
+  msg: string,
+  data: P
 }
 
 // ***************设置仓库的数据格式*****************
