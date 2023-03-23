@@ -48,11 +48,11 @@ export default defineComponent({
       return store.state.user
     })
     // 挂载的时候，若本地有token则发送请求验证Token
-    onMounted(() => {
-      if (localStorage.getItem('token')) {
-        store.dispatch('fetchCurrentUser')
-      }
-    })
+    // onMounted(() => {
+    //   if (localStorage.getItem('token')) {
+    //     store.dispatch('fetchCurrentUser')
+    //   }
+    // })
 
     // 退出登录 1.清空本地token 2.转跳至首页并刷新(取消)
     const logOut = () => {

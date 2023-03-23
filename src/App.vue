@@ -45,12 +45,6 @@ export default defineComponent({
         createMessage(message, 'error', 2000)
       }
     })
-    // 挂载的时候检查以下登录状态
-    onMounted(() => {
-      // if (localStorage.getItem('token')) {
-      //   store.dispatch('fetchCurrentUser')
-      // }
-    })
     // 返回数据
     return {
       isLoading,
