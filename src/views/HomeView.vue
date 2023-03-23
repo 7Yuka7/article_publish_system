@@ -4,7 +4,7 @@
       <div class="row py-lg-5">
         <div class="col-lg-6 col-md-8 mx-auto">
           <img src="../assets/callout.svg" alt="callout" class="w-50" />
-          <h2 class="font-weight-light">山风专栏，分享您刚编的故事</h2>
+          <h2 class="font-weight-light">山风专栏，分享您的故事</h2>
           <p>
             <a href="#" class="btn btn-primary my-2">开始写文章</a>
           </p>
@@ -21,8 +21,11 @@
           <span class="visually-hidden">Loading...</span>
         </div>
       </template>
+      <!-- 上传成功--显示可以复原的x号 -->
       <template #loaded="imgData">
-        <img :src="imgData.fileData.data.url" alt="">
+        <div class="img-container" >
+          <img :src="imgData.fileData.data.url" alt="">
+        </div>
       </template>
     </UploaderView>
 
