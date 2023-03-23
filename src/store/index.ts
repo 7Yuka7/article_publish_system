@@ -1,7 +1,7 @@
 import { createStore, Commit } from 'vuex'
 // 引入接口
 import requests from '@/request/request'
-import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetchUser, reqPostPaper } from '@/request/index'
+import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetchUser, reqPostPaper, reqFetchPaper } from '@/request/index'
 // 引入请求axios的实例 -- 后续在request的响应拦截器中统一设置了token的发送与否
 // import requests from '@/request/request'
 
@@ -39,9 +39,21 @@ interface HomeColumData {
 // 不确定哪些数据可以不用带，因此此处Partial一下
 export type IHomeColumData = Partial<HomeColumData>
 
+// ***************用户数据格式********************
+export interface UserProps {
+  isLogin: boolean,
+  avatar?: ImageData,
+  column?: string,
+  description?: string,
+  emial?: string,
+  nickName?: string,
+  _id?: string,
+  createdAt?: string
+}
+
 // ***************个人专栏列表数据********************
 interface PostData {
-  author: string,
+  author: string | UserProps,
   column: string,
   createAt: string,
   excerpt: string,
@@ -52,18 +64,6 @@ interface PostData {
   content?: string
 }
 export type IPostData = Partial<PostData>
-//
-
-// ***************用户数据格式********************
-export interface UserProps {
-  isLogin: boolean,
-  avatar?: ImageData,
-  column?: string,
-  description?: string,
-  emial?: string,
-  nickName?: string,
-  _id?: string
-}
 
 // ***************错误信息格式********************
 interface ErrorProps {
@@ -84,7 +84,7 @@ export interface GlobalDataProps {
   token: string, // 令牌
   isLoading: boolean, // 是否加载
   colums: IHomeColumData[], // 专栏卡片数据
-  posts: IPostData[], // 文章数据
+  posts: IPostData[], // 文章数据列表
   user: UserProps // 用户数据
 }
 // 抽象的actions发送函数
@@ -160,6 +160,16 @@ const store = createStore<GlobalDataProps>({
       } catch (error) {
         console.log('发表文章失败', error)
       }
+    },
+    // 请求文章详情
+    async fetchPaper ({ commit }, value) {
+      try {
+        const result = await reqFetchPaper(value)
+        console.log('文章详情', result.data.data)
+        commit('FETCHPAPER', result.data.data)
+      } catch (error) {
+        console.error('请求文章详情失败', error)
+      }
     }
   },
 
@@ -204,7 +214,12 @@ const store = createStore<GlobalDataProps>({
       state.token = ''
       delete requests.defaults.headers.common.Authorization
     },
+    // 发表文章
     POSTPAPER (state, value) {
+      state.posts.push(value)
+    },
+    // 请求单片文章详情
+    FETCHPAPER (state, value) {
       state.posts.push(value)
     }
   },
@@ -224,7 +239,10 @@ const store = createStore<GlobalDataProps>({
       return state.colums.find(c => c._id === currentId)
     },
     getPostsById: (state) => (currentId:string) => {
-      return state.posts.filter(item => item.column === currentId)
+      return state.posts.filter(item => item.column === currentId) // colum是人
+    },
+    getPostById: (state) => (currentId:string) => {
+      return state.posts.find(c => c._id === currentId)
     }
   }
 })

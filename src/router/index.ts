@@ -18,7 +18,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/LoginView.vue'),
     meta: { redirectAlreadyLogin: true }
   },
-  // 文章详情界面
+  // 个人专栏的文章详情界面
   {
     path: '/columns/:id',
     name: 'columns',
@@ -44,6 +44,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'upload',
     component: () => import('@/components/UploaderView.vue'),
     meta: { requireLogin: true }
+  },
+  // 具体文章内容
+  {
+    path: '/posts/:id',
+    name: 'posts',
+    component: () => import('@/views/PostDetail.vue')
   }
 ]
 

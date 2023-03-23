@@ -78,3 +78,11 @@ export const reqPostPaper = (data:object) => {
     data
   })
 }
+
+// 请求特定文章
+export const reqFetchPaper = (id:string) => {
+  return requests({
+    url: `/posts/${id}`,
+    method: 'get'
+  })
+}
