@@ -61,7 +61,8 @@ interface PostData {
   key: number,
   title: string,
   _id: string,
-  content?: string
+  content?: string,
+  isHTML?: boolean
 }
 export type IPostData = Partial<PostData>
 

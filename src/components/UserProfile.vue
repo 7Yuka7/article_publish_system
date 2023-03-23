@@ -1,20 +1,58 @@
 <template>
-  <div>
-
+  <div class="userProfile-container">
+    <div class="img-container">
+      <img :src="author.avatar?  author.avatar.url:'@/assets/R-C.jpg'" :alt="author.nickName">
+    </div>
+    <div class="user-info">
+      <p>{{ author.nickName }}</p>
+      <span>{{ author.description }}</span>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
+// 引入数据格式
+import { UserProps } from '@/store'
 
 export default defineComponent({
   name: 'UserProfile',
+  props: {
+    author: {
+      type: Object as PropType<UserProps>,
+      required: true
+    }
+  },
   setup () {
     return {}
   }
 })
 </script>
 
-<style scoped>
-
+<style scoped lang="less">
+.userProfile-container{
+  display: flex;
+  justify-content: space-between;
+  .img-container{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    img{
+      width: 100%;
+    }
+  }
+  .user-info{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    p{
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    span{
+      color: gray;
+    }
+  }
+}
 </style>
