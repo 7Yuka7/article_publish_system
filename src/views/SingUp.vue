@@ -1,26 +1,28 @@
 <template>
-  <ValidateForm @form-submit="onFormSubmit">
-    <div class="mb-3">
-      <label class="form-label">邮箱地址</label>
-      <ValidateInput :rules="emailRules" v-model="email" placeholder="请输入你的邮箱" type="text"></ValidateInput>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">昵称</label>
-      <ValidateInput :rules="nickNameRules" v-model="nickName" placeholder="请输入你的昵称" type="text"></ValidateInput>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">密码</label>
-      <ValidateInput :rules="passwordRules" v-model="password" placeholder="请输入你的密码" type="password"></ValidateInput>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">重复密码</label>
-      <ValidateInput :rules="repeatePasswordRules" v-model="repeatePassword" placeholder="请再次输入你的密码" type="password">
-      </ValidateInput>
-    </div>
-    <template #submit>
-      <button type="submit" class="btn btn-primary w-100" :style="{ 'marginRight': '5px' }">注册新用户</button>
-    </template>
-  </ValidateForm>
+  <div class="singup-container">
+    <ValidateForm @form-submit="onFormSubmit">
+      <div class="mb-3">
+        <label class="form-label">邮箱地址</label>
+        <ValidateInput :rules="emailRules" v-model="email" placeholder="请输入你的邮箱" type="text"></ValidateInput>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">昵称</label>
+        <ValidateInput :rules="nickNameRules" v-model="nickName" placeholder="请输入你的昵称" type="text"></ValidateInput>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">密码</label>
+        <ValidateInput :rules="passwordRules" v-model="password" placeholder="请输入你的密码" type="password"></ValidateInput>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">重复密码</label>
+        <ValidateInput :rules="repeatePasswordRules" v-model="repeatePassword" placeholder="请再次输入你的密码" type="password">
+        </ValidateInput>
+      </div>
+      <template #submit>
+        <button type="submit" class="btn btn-primary w-100" :style="{ 'marginRight': '5px' }">注册新用户</button>
+      </template>
+    </ValidateForm>
+  </div>
 </template>
 
 <script lang="ts">
@@ -103,4 +105,13 @@ export default defineComponent({
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.singup-container {
+  width: 40%;
+  margin: auto;
+  border: 3px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3%;
+  margin-bottom: 15px;
+  padding: 20px;
+}
+</style>

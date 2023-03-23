@@ -1,8 +1,7 @@
 <template>
   <div class="file-upload">
-    <h1>上传文章界面</h1>
     <!-- 使用slot可以使得模板形式多样化 -->
-    <div class="file-upload-container" @click.prevent="triggerUpload">
+    <div class="file-upload-container" @click.prevent="triggerUpload" v-bind="$attrs">
       <!-- 正在上传 -->
       <slot v-if="uploadStatus === 'loading'" name="loading">
         <button class="btn btn-primary" disabled>正在上传...</button>
@@ -43,6 +42,7 @@ type uploadStatus = 'ready' | 'loading' | 'success' | 'error'
 type CheckFunction = (file: File) => boolean
 
 export default defineComponent({
+  name: 'UploaderView',
   props: {
     action: { // 传入一个地址
       type: String,
@@ -52,6 +52,7 @@ export default defineComponent({
       type: Function as PropType<CheckFunction>
     }
   },
+  inheritAttrs: false, // 取消样式的继承
   emits: ['file-uploaded', 'file-uploaded-error'], // 使用该组件需要传入上传成功和上传失败事件(感觉上传失败事件可以直接在该组件中直接写)
   setup (props, context) {
     // 存储获得的图片元素
@@ -123,4 +124,13 @@ export default defineComponent({
 })
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+.file-upload-container{
+  position: relative;
+  .btn-close{
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+</style>

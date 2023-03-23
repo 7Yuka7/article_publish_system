@@ -37,7 +37,8 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 // 引入数据格式
 import { UserProps } from '@/store'
-
+// 引入request
+import requests from '@/request/request'
 export default defineComponent({
   name: 'GlobalHeader',
   components: { DropDown, DropDownItem },
@@ -54,9 +55,9 @@ export default defineComponent({
     //   }
     // })
 
-    // 退出登录 1.清空本地token 2.转跳至首页并刷新(取消)
+    // 退出登录 1.清空本地token 2.清空仓库中的token 3.删除请求响应中的Authorization 4.转跳至首页并刷新(取消) -- 该操作应该是可以复现的
     const logOut = () => {
-      localStorage.removeItem('token')
+      store.commit('LOGOUT')
       router.go(0)
     }
 

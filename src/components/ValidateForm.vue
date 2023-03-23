@@ -84,12 +84,7 @@ export default defineComponent({
 
 <style scoped lang="less">
 .validate-form-container{
-  width: 40%;
-  margin: auto;
-  padding: 20px;
-  border: 3px solid rgba(0,0,0,0.2);
-  border-radius: 3%;
-  margin-bottom: 15px;
+  width: 100%;
   .option-container{
   display: flex;
   justify-content: space-between;

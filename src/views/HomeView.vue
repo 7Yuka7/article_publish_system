@@ -38,7 +38,7 @@
 import { defineComponent, computed, onMounted } from 'vue'
 // 引入组件
 import ColumnList from '@/components/ColumnList.vue' // 卡片组件
-import UploaderView from './UploaderView.vue' // 上传组件
+import UploaderView from '../components/UploaderView.vue' // 上传组件
 import createMessage from '@/components/createMessage' // message组件
 // 引入store以及需要用到的数据结构
 import { useStore } from 'vuex'

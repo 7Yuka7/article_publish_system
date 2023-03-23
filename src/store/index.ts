@@ -1,6 +1,7 @@
 import { createStore, Commit } from 'vuex'
 // 引入接口
-import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetchUser } from '@/request/index'
+import requests from '@/request/request'
+import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetchUser, reqPostPaper } from '@/request/index'
 // 引入请求axios的实例 -- 后续在request的响应拦截器中统一设置了token的发送与否
 // import requests from '@/request/request'
 
@@ -44,7 +45,7 @@ interface PostData {
   column: string,
   createAt: string,
   excerpt: string,
-  image: ImageData,
+  image: ImageData | string,
   key: number,
   title: string,
   _id: string,
@@ -61,7 +62,7 @@ export interface UserProps {
   description?: string,
   emial?: string,
   nickName?: string,
-  _id?: number
+  _id?: string
 }
 
 // ***************错误信息格式********************
@@ -150,6 +151,15 @@ const store = createStore<GlobalDataProps>({
       } catch (error) {
         return error
       }
+    },
+    // ****发表文章
+    async postPaper ({ commit }, value) {
+      try {
+        const result = await reqPostPaper(value)
+        commit('POSTPAPER', result.data)
+      } catch (error) {
+        console.log('发表文章失败', error)
+      }
     }
   },
 
@@ -188,10 +198,13 @@ const store = createStore<GlobalDataProps>({
     SETERROR (state, value) {
       state.error = { ...value }
     },
-    // -------------------------------------------------------------
-    // 以下为test ------------------------
-    // 创建新的文章
-    createPost (state, value) {
+    // 退出登录 & token信息过期
+    LOGOUT (state) {
+      localStorage.removeItem('token')
+      state.token = ''
+      delete requests.defaults.headers.common.Authorization
+    },
+    POSTPAPER (state, value) {
       state.posts.push(value)
     }
   },

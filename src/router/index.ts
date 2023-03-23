@@ -42,7 +42,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/upload',
     name: 'upload',
-    component: () => import('@/views/UploaderView.vue'),
+    component: () => import('@/components/UploaderView.vue'),
     meta: { requireLogin: true }
   }
 ]
@@ -83,6 +83,7 @@ router.beforeEach(async (to, from, next) => {
         }
       } catch (error) {
         // 请求失败 -- 弹出提示,并跳转到登录界面
+        store.commit('LOGOUT')
         store.commit('SETERROR', error)
         next('/login')
       }

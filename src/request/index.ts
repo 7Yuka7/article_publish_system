@@ -69,3 +69,12 @@ export const reqPostFile = (url:string, fileData:FormData) => {
     }
   })
 }
+
+// 发布文章
+export const reqPostPaper = (data:object) => {
+  return requests({
+    url: '/posts',
+    method: 'post',
+    data
+  })
+}

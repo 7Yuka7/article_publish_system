@@ -4,7 +4,7 @@
     <div class="colum-detail-page w-75 mx-auto">
       <div class="cllum-info row mb-4 border-bottom pb-4 align-items-center" v-if="colum">
         <div class="col-3 text-center">
-          <img :src="colum.avatar.url" :alt="colum.title" class="rounded-circle border w-100">
+          <img :src="colum.avatar && colum.avatar.url" :alt="colum.title" class="rounded-circle border w-100">
         </div>
         <div class="col-9">
           <h4>{{ colum.title }}</h4>
