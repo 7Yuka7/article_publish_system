@@ -95,3 +95,11 @@ export const reqPatchPaper = (id:string, data:{ titile:string, content:string, i
     data
   })
 }
+
+// 删除文章
+export const reqDeletePaper = (id:string) => {
+  return requests({
+    url: `posts/${id}`,
+    method: 'delete'
+  })
+}

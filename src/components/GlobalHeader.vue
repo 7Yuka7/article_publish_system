@@ -13,6 +13,10 @@
             <!-- 点击新建文章转跳至 -->
             <router-link to="/create" class="dropdown-item">新建文章</router-link>
           </DropDownItem>
+          <DropDownItem>
+            <!-- 点击我的专栏转跳至 -->
+            <router-link :to="`/columns/${user.column}`" class="dropdown-item">我的专栏</router-link>
+          </DropDownItem>
           <DropDownItem :disabled="true">
             <a class="dropdown-item">编辑资料</a>
           </DropDownItem>
@@ -37,14 +41,14 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 // 引入数据格式
 import { UserProps } from '@/store'
-// 引入request
-import requests from '@/request/request'
+
 export default defineComponent({
   name: 'GlobalHeader',
   components: { DropDown, DropDownItem },
   setup () {
     const store = useStore()
     const router = useRouter()
+    // 获取当前用户信息
     const user = computed(():UserProps => {
       return store.state.user
     })

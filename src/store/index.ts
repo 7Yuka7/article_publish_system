@@ -1,7 +1,7 @@
 import { createStore, Commit } from 'vuex'
 // 引入接口
 import requests from '@/request/request'
-import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetchUser, reqPostPaper, reqFetchPaper, reqPatchPaper } from '@/request/index'
+import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetchUser, reqPostPaper, reqFetchPaper, reqPatchPaper, reqDeletePaper } from '@/request/index'
 // 引入请求axios的实例 -- 后续在request的响应拦截器中统一设置了token的发送与否
 // import requests from '@/request/request'
 
@@ -178,8 +178,20 @@ const store = createStore<GlobalDataProps>({
       const { id, data } = value
       try {
         const result = await reqPatchPaper(id, data)
+        commit('PATCHPAPER', result.data)
       } catch (error) {
         console.error('更新文章失败', error)
+      }
+    },
+
+    // 删除文章
+    async deletePaper ({ commit }, id:string) {
+      try {
+        const result = await reqDeletePaper(id)
+        console.log('删除', result.data)
+        // commit('DELETEPAPER')
+      } catch (error) {
+        console.error('删除文章失败', error)
       }
     }
   },
