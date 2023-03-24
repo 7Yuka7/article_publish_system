@@ -35,8 +35,12 @@
       </div>
       <div class="mb-3">
         <label class="form-label">文章详情</label>
-        <ValidateInput :rules="paperRules" v-model="paperValue" placeholder="请输入文章详情" type="text" tag='textarea'
-          rows="10"></ValidateInput>
+        <!-- markdown输入框 -->
+        <MarkDownEditor v-model="paperValue" :options="options" ref="editoreRef" @blur="checkEditor" :class="{'is-invalid':!editorStatus.isValid}"></MarkDownEditor>
+        <!-- 错误信息显示 -->
+        <span v-if="!editorStatus.isValid" class="invalid-feedback mt-1">{{ editorStatus.message }}</span>
+        <!-- <ValidateInput :rules="paperRules" v-model="paperValue" placeholder="请输入文章详情" type="text" tag='textarea'
+          rows="10"></ValidateInput> -->
       </div>
       <template #submit>
         <button type="submit" class="btn btn-primary w-100" :style="{ 'marginRight': '5px' }">{{ isEidt ? '修改文章' : '发表文章'
@@ -50,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, reactive } from 'vue'
 // 组件复用
 // 上传头图组件
 import UploaderView from '@/components/UploaderView.vue'
@@ -59,6 +63,9 @@ import ValidateForm from '@/components/ValidateForm.vue'
 import ValidateInput, { RuleProp } from '@/components/ValidateInput.vue'
 // message组件
 import createMessage from '@/components/createMessage'
+// markdown组件
+import EasyMDE, { Options } from 'easymde'
+import MarkDownEditor from '@/components/MarkDownEditor.vue'
 
 // 引入路由和仓库
 import { useRouter, useRoute } from 'vue-router'
@@ -70,22 +77,57 @@ import { GlobalDataProps, IPostData, ImageData, ResponseType } from '@/store/ind
 // 引入验证函数
 import useCheckFile from '@/hooks/useCheckFile'
 
+// markdown类型
+interface EditorInstance {
+  clear: () => void,
+  getMDEInstance: () => EasyMDE | null
+}
+
 export default defineComponent({
   name: 'CreatePost',
   components: {
     ValidateForm,
     ValidateInput,
-    UploaderView
+    UploaderView,
+    MarkDownEditor
   },
   setup () {
     const route = useRoute()
     const router = useRouter()
     const store = useStore<GlobalDataProps>()
+
+    // 获取实例对象
+    const editoreRef = ref<EditorInstance>()
+    // 获取当前状态
+    const editorStatus = reactive({
+      isValid: true,
+      message: ''
+    })
+    // 检查状态的方法
+    const checkEditor = () => {
+      // 如果文章内容为空
+      if (paperValue.value.trim() === '') {
+        editorStatus.isValid = false
+        editorStatus.message = '文章详情不能为空'
+      } else {
+        editorStatus.isValid = true
+        editorStatus.message = ''
+      }
+    }
+    // 配置要传入markdown输入框的option
+    const options: Options = {
+      spellChecker: false
+    }
+
     // 验证是否是修改模式
     const isEidt = !!route.query.id
     const updateData = ref() // 用来存储需要修改的数据
+
     // 挂载的时候根据是否是修改模式发请求
     onMounted(async () => {
+      if (editoreRef.value) {
+        console.log(editoreRef.value.getMDEInstance())
+      }
       if (isEidt) {
         try {
           await store.dispatch('fetchPaper', route.query.id) // 派发请求，更新数据
@@ -111,14 +153,15 @@ export default defineComponent({
     ]
     // paper数据验证以及双向绑定
     const paperValue = ref('')
-    const paperRules: RuleProp[] = [
-      { type: 'required', message: '文章详情不能为空' }
-    ]
+    // const paperRules: RuleProp[] = [
+    //   { type: 'required', message: '文章详情不能为空' }
+    // ]
 
     // 提交表单的验证转跳
     const onFormSubmit = (result: boolean) => {
+      checkEditor()
       // 表单验证通过
-      if (result) {
+      if (result && editorStatus.isValid) {
         // 拿到发送表单请求需要的数据 -- column为个人的标识
         const { column, _id } = store.state.user
         // type gaurd
@@ -175,7 +218,7 @@ export default defineComponent({
     }
 
     // 返回数据
-    return { titleValue, titleRules, paperValue, paperRules, onFormSubmit, CheckFunction, fileUploaded, fileUploadedError, updateData, isEidt }
+    return { titleValue, titleRules, paperValue, onFormSubmit, CheckFunction, fileUploaded, fileUploadedError, updateData, isEidt, options, editoreRef, checkEditor, editorStatus }
   }
 })
 </script>

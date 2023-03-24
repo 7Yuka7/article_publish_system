@@ -38,7 +38,7 @@ import UserProfile from '@/components/UserProfile.vue' // 显示用户信息
 import ModalView from '@/components/ModalView.vue' // 显示删除确认栏
 import createMessage from '@/components/createMessage'
 // 引入markdown转换库
-import MarkDownIt from 'markdown-it'
+import { marked } from 'marked'
 
 export default defineComponent({
   name: 'PostDetial',
@@ -48,7 +48,7 @@ export default defineComponent({
   },
   setup () {
     // markdown实例
-    const md = new MarkDownIt()
+    // const md = new MarkDownIt()
     // 路由和仓库
     const router = useRouter()
     const route = useRoute()
@@ -83,7 +83,7 @@ export default defineComponent({
     // 获取需要转换成MarkDown的数据
     const currentHTML = computed(() => {
       if (currentPost.value && currentPost.value.content) {
-        return currentPost.value.isHTML ? currentPost.value.content : md.render(currentPost.value.content)
+        return currentPost.value.isHTML ? currentPost.value.content : marked.parse(currentPost.value.content)
       } else {
         return ''
       }
