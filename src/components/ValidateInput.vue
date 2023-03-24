@@ -1,15 +1,15 @@
 <template>
   <div class="validate-input-container">
-    <input v-if="tag !== 'textarea'" class="form-control" aria-describedby="emailHelp" :value="val" @blur="validateInput"
-      :class="{ 'is-invalid': error }" @input="updateValue" v-bind="$attrs">
-    <textarea v-else class="form-control"  :value="val" @blur="validateInput"
-      :class="{ 'is-invalid': error }" @input="updateValue" v-bind="$attrs"></textarea>
+    <input v-if="tag !== 'textarea'" class="form-control" aria-describedby="emailHelp" v-model="val" @blur="validateInput"
+      :class="{ 'is-invalid': error }" v-bind="$attrs">
+    <textarea v-else class="form-control"  v-model="val" @blur="validateInput"
+      :class="{ 'is-invalid': error }" v-bind="$attrs"></textarea>
     <span v-if="error" class="invalid-feedback">{{ message }}</span>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, toRefs, onMounted } from 'vue'
+import { defineComponent, PropType, reactive, toRefs, onMounted, computed } from 'vue'
 // 引入事件监听
 import { emitter } from './ValidateForm.vue'
 // 规则
@@ -19,6 +19,13 @@ export interface RuleProp {
   min?: { length: number, message: string }
   max?: { length: number, message: string }
   isRepeate?: () => boolean
+}
+
+// 数据类型
+interface InputData {
+  val: string,
+  error: boolean,
+  message: string
 }
 
 // 需要input还是textarea
@@ -43,18 +50,28 @@ export default defineComponent({
     // 验证邮箱的正则表达式
     const emialReg = /^([a-zA-Z\d][\w-]{2,})@(\w{2,})\.([a-z]{2,})(\.[a-z]{2,})?$/
     // 设置初始值
-    const inputRef = reactive({
-      val: props.modelValue || '',
+    const inputRef:InputData = reactive({
+      val: computed<string>({
+        get () {
+          return props.modelValue || ''
+        },
+        set (val) {
+          context.emit('update:modelValue', val)
+        }
+      }),
       error: false,
       message: ''
     })
-
+    // 获取当前输入的长度
+    const currentLength = computed<number>(() => {
+      return inputRef.val.length
+    })
     // 手动实现v-model
-    const updateValue = (e: Event) => {
-      const targetValue = (e.target as HTMLInputElement).value
-      inputRef.val = targetValue
-      context.emit('update:modelValue', targetValue)
-    }
+    // const updateValue = (e: Event) => {
+    //   const targetValue = (e.target as HTMLInputElement).value
+    //   inputRef.val = targetValue
+    //   context.emit('update:modelValue', targetValue)
+    // }
 
     // 验证输入
     const validateInput = () => {
@@ -75,11 +92,11 @@ export default defineComponent({
             case 'range': {
               // 解构--此处要包裹在块作用域中，因为switch不允许在case中申明变量
               const { min, max } = rule
-              if (min && inputRef.val.length < min.length) {
+              if (min && currentLength.value < min.length) {
                 passed = false
                 inputRef.message = min.message
               }
-              if (max && inputRef.val.length > max.length) {
+              if (max && currentLength.value > max.length) {
                 passed = false
                 inputRef.message = max.message
               }
@@ -122,7 +139,7 @@ export default defineComponent({
       inputRef.val = ''
     }
 
-    return { ...toRefs(inputRef), validateInput, updateValue }
+    return { ...toRefs(inputRef), validateInput }
   }
 
 })

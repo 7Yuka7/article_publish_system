@@ -1,11 +1,11 @@
 <template>
   <div class="createPost-container">
+    <h4>{{ isEidt ? '修改文章' : '发表文章' }}</h4>
     <!-- 上传图片 -->
     <div class="uploader-container">
       <UploaderView :action="'/upload'"
         class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
-        :before-upload="CheckFunction"
-        @file-uploaded="fileUploaded"
+        :before-upload="CheckFunction" :updatePosts="updateData" @file-uploaded="fileUploaded"
         @file-uploaded-error="fileUploadedError">
         <!-- 默认 -->
         <h2>点击上传头图</h2>
@@ -39,7 +39,8 @@
           rows="10"></ValidateInput>
       </div>
       <template #submit>
-        <button type="submit" class="btn btn-primary w-100" :style="{ 'marginRight': '5px' }">发表文章</button>
+        <button type="submit" class="btn btn-primary w-100" :style="{ 'marginRight': '5px' }">{{ isEidt ? '修改文章' : '发表文章'
+        }}</button>
       </template>
       <template #clearInput>
         <button type="submit" class="btn btn-danger w-100">清空内容</button>
@@ -49,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 // 组件复用
 // 上传头图组件
 import UploaderView from '@/components/UploaderView.vue'
@@ -60,7 +61,7 @@ import ValidateInput, { RuleProp } from '@/components/ValidateInput.vue'
 import createMessage from '@/components/createMessage'
 
 // 引入路由和仓库
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 
 // 引入数据格式
@@ -77,8 +78,31 @@ export default defineComponent({
     UploaderView
   },
   setup () {
+    const route = useRoute()
     const router = useRouter()
     const store = useStore<GlobalDataProps>()
+    // 验证是否是修改模式
+    const isEidt = !!route.query.id
+    const updateData = ref() // 用来存储需要修改的数据
+    // 挂载的时候根据是否是修改模式发请求
+    onMounted(async () => {
+      if (isEidt) {
+        try {
+          await store.dispatch('fetchPaper', route.query.id) // 派发请求，更新数据
+          const currentPost = store.state.postDetail // 拿到数据
+          if (currentPost.image) {
+            updateData.value = { data: currentPost.image }
+          }
+          // 将其他数据依次赋值
+          titleValue.value = currentPost.title as string
+          paperValue.value = currentPost.content || ''
+        } catch (error) {
+          console.log(error)
+          createMessage('更新数据失败，请刷新', 'error', 1500)
+        }
+      }
+    })
+
     // title数据验证以及双向绑定
     let imageId = ''
     const titleValue = ref('')
@@ -95,7 +119,7 @@ export default defineComponent({
     const onFormSubmit = (result: boolean) => {
       // 表单验证通过
       if (result) {
-        // 拿到发送表单请求需要的数据
+        // 拿到发送表单请求需要的数据 -- column为个人的标识
         const { column, _id } = store.state.user
         // type gaurd
         if (column) {
@@ -108,8 +132,10 @@ export default defineComponent({
           if (imageId) {
             newPosts.image = imageId
           }
-          // 将新创建的数据传入仓库中，并转跳至column页
-          store.dispatch('postPaper', newPosts)
+          // 将新创建的数据传入仓库中，并转跳至column页 -- 根据需求的不同，派发不同的actions以及data
+          const dispatchAction = isEidt ? 'patchPaper' : 'postPaper'
+          const data = isEidt ? { id: route.query.id, data: { title: titleValue.value, content: paperValue.value, image: imageId } } : newPosts
+          store.dispatch(dispatchAction, data)
           router.push({
             name: 'columns',
             params: {
@@ -144,12 +170,12 @@ export default defineComponent({
       createMessage(`上传图片成功 ID：${rawData.data._id}`, 'success', 1500)
     }
 
-    const fileUploadedError = (error:object) => { // 不知道怎么人为设置失败的一个case，因此不知道失败的error的数据格式
+    const fileUploadedError = (error: object) => { // 不知道怎么人为设置失败的一个case，因此不知道失败的error的数据格式
       createMessage(`上传失败${error}`, 'error', 1500)
     }
 
     // 返回数据
-    return { titleValue, titleRules, paperValue, paperRules, onFormSubmit, CheckFunction, fileUploaded, fileUploadedError }
+    return { titleValue, titleRules, paperValue, paperRules, onFormSubmit, CheckFunction, fileUploaded, fileUploadedError, updateData, isEidt }
   }
 })
 </script>

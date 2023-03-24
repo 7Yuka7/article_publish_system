@@ -1,11 +1,11 @@
 <template>
   <div class="userProfile-container">
     <div class="img-container">
-      <img :src="author.avatar?  author.avatar.url:'@/assets/R-C.jpg'" :alt="author.nickName">
+      <img :src="author?  (author.avatar as ImageData).url:'../assets/R-C.jpg'" :alt="author && author.nickName">
     </div>
     <div class="user-info">
-      <p>{{ author.nickName }}</p>
-      <span>{{ author.description }}</span>
+      <p>{{ author && author.nickName }}</p>
+      <span>{{ author && author.description }}</span>
     </div>
   </div>
 </template>
@@ -13,7 +13,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 // 引入数据格式
-import { UserProps } from '@/store'
+import { UserProps, ImageData } from '@/store'
 
 export default defineComponent({
   name: 'UserProfile',
@@ -37,6 +37,7 @@ export default defineComponent({
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    border: 1px solid gray;
     overflow: hidden;
     img{
       width: 100%;

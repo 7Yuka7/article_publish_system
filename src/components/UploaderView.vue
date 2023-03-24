@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType } from 'vue'
+import { defineComponent, ref, PropType, watch } from 'vue'
 
 // 引入请求
 import { reqPostFile } from '@/request'
@@ -50,6 +50,9 @@ export default defineComponent({
     },
     beforeUpload: { // 在上传文件之前先验证文件的格式
       type: Function as PropType<CheckFunction>
+    },
+    updatePosts: { // 需要更新数据
+      type: Object
     }
   },
   inheritAttrs: false, // 取消样式的继承
@@ -60,8 +63,15 @@ export default defineComponent({
     // 为了获取ref元素
     const fileInput = ref<null | HTMLInputElement>(null)
     const uploadBtn = ref<HTMLDivElement>()
-    // 改变状态
-    const uploadStatus = ref<uploadStatus>('ready')
+    // 改变状态 -- 如果一开始有需要修改的数据传入，就是上传成功的一个状态
+    const uploadStatus = ref<uploadStatus>(props.updatePosts ? 'success' : 'ready')
+
+    watch(() => props.updatePosts, (newValue) => {
+      if (newValue) {
+        uploadStatus.value = 'success'
+        fileData.value = newValue
+      }
+    })
 
     // 点击上传事件 -- 应该判断一下 事件的委派
     const triggerUpload = (e: Event) => {

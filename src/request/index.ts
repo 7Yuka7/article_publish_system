@@ -86,3 +86,12 @@ export const reqFetchPaper = (id:string) => {
     method: 'get'
   })
 }
+
+// 修改文章
+export const reqPatchPaper = (id:string, data:{ titile:string, content:string, image:string }) => {
+  return requests({
+    url: `/posts/${id}`,
+    method: 'patch',
+    data
+  })
+}
