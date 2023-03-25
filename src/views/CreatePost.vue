@@ -36,7 +36,8 @@
       <div class="mb-3">
         <label class="form-label">文章详情</label>
         <!-- markdown输入框 -->
-        <MarkDownEditor v-model="paperValue" :options="options" ref="editoreRef" @blur="checkEditor" :class="{'is-invalid':!editorStatus.isValid}"></MarkDownEditor>
+        <MarkDownEditor v-model="paperValue" :options="options" ref="editoreRef" @blur="checkEditor"
+          :class="{ 'is-invalid': !editorStatus.isValid }"></MarkDownEditor>
         <!-- 错误信息显示 -->
         <span v-if="!editorStatus.isValid" class="invalid-feedback mt-1">{{ editorStatus.message }}</span>
         <!-- <ValidateInput :rules="paperRules" v-model="paperValue" placeholder="请输入文章详情" type="text" tag='textarea'
@@ -125,9 +126,6 @@ export default defineComponent({
 
     // 挂载的时候根据是否是修改模式发请求
     onMounted(async () => {
-      if (editoreRef.value) {
-        console.log(editoreRef.value.getMDEInstance())
-      }
       if (isEidt) {
         try {
           await store.dispatch('fetchPaper', route.query.id) // 派发请求，更新数据
@@ -158,7 +156,7 @@ export default defineComponent({
     // ]
 
     // 提交表单的验证转跳
-    const onFormSubmit = (result: boolean) => {
+    const onFormSubmit = async (result: boolean) => {
       checkEditor()
       // 表单验证通过
       if (result && editorStatus.isValid) {
@@ -178,14 +176,21 @@ export default defineComponent({
           // 将新创建的数据传入仓库中，并转跳至column页 -- 根据需求的不同，派发不同的actions以及data
           const dispatchAction = isEidt ? 'patchPaper' : 'postPaper'
           const data = isEidt ? { id: route.query.id, data: { title: titleValue.value, content: paperValue.value, image: imageId } } : newPosts
-          store.dispatch(dispatchAction, data)
-          router.push({
-            name: 'columns',
-            params: {
-              id: column
-            }
+          try {
+            await store.dispatch(dispatchAction, data)
+            createMessage(isEidt ? '更新文章成功，两秒后进行转跳' : '创建文章成功，两秒后进行转跳', 'success', 1500)
+            setTimeout(() => {
+              router.push({
+                name: 'columns',
+                params: {
+                  id: column
+                }
+              }
+              )
+            }, 2000)
+          } catch (error) {
+            createMessage('操作失败', 'error', 1500)
           }
-          )
         }
       }
     }

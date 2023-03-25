@@ -1,9 +1,9 @@
 import requests from './request'
 
 // 请求首页专栏信息接口
-export const reqFetchColumn = () => {
+export const reqFetchColumn = (currentPage?:number, pageSize?:number) => {
   return requests({
-    url: '/columns',
+    url: `/columns?currentPage=${currentPage}&pageSize=${pageSize}`,
     method: 'get'
   })
 }
@@ -18,12 +18,8 @@ export const reqFetchSingleColum = (id:string) => {
 // 个人详情页面 -- 文章展示
 export const reqFetchPost = (id:string, currentPage?:string, pageSize?:string) => {
   return requests({
-    url: `/columns/${id}/posts`,
-    method: 'get',
-    params: {
-      currentPage,
-      pageSize
-    }
+    url: `/columns/${id}/posts?currentPage=${currentPage}&pageSize=${pageSize}`,
+    method: 'get'
   })
 }
 

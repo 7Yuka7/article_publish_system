@@ -14,11 +14,17 @@
     </div>
     <!-- 文章信息 -->
     <PostList :list="list"></PostList>
+    <!-- 加载更多 -->
+    <div class="loader-more-container text-center" v-if="!isLastPage">
+      <button class="btn btn-outline-primary mt-2 mb-5 btn-block w-25 mx-auto" @click="loadMorePage">
+        加载更多
+      </button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onMounted } from 'vue'
+import { defineComponent, computed, onMounted, ComputedRef } from 'vue'
 // 引入路由信息
 import { useRoute } from 'vue-router'
 // 引入仓库以及数据格式
@@ -26,6 +32,9 @@ import { useStore } from 'vuex'
 import { GlobalDataProps } from '../store'
 // 引入文章组件
 import PostList from '@/components/PostList.vue'
+// 引入加载更多
+import useLoadMore from '@/hooks/useLoadMore'
+import { is } from '@babel/types'
 
 export default defineComponent({
   name: 'ColumDetail',
@@ -39,7 +48,6 @@ export default defineComponent({
 
     // 从store中获取要展示的数据
     const colum = computed(() => {
-      // 不用简化也可以，因为使用后台接口数据本来就只会返回一条
       return store.getters.getColumById(currentId)
     })
     const list = computed(() => {
@@ -51,13 +59,26 @@ export default defineComponent({
       getData()
     })
     const getData = () => {
+      // 这些操作都会进行，具体发不发送请求由store中判断
       store.dispatch('fetchSingleColumn', currentId)
-      store.dispatch('fetchPost', currentId)
+      const data = { id: currentId, currentPage: 1, pageSize: 3 }
+      store.dispatch('fetchPost', data)
     }
+
+    // 加载更多
+    const total = computed(() => {
+      return store.state.posts.count
+    })
+    const currentPage = computed(() => store.state.colums.currentPage)
+
+    const { loadMorePage, isLastPage } = useLoadMore('fetchPost', total as ComputedRef<number>, { currentPage: currentPage.value ? currentPage.value + 1 : 2, pagaSize: 3 }, currentId as string)
+
     // 返回参数
     return {
       colum,
-      list
+      list,
+      loadMorePage,
+      isLastPage
     }
   }
 })

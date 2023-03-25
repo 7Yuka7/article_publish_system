@@ -5,6 +5,9 @@ import { reqFetchColumn, reqFetchSingleColum, reqFetchPost, reqPutLogin, reqFetc
 // 引入请求axios的实例 -- 后续在request的响应拦截器中统一设置了token的发送与否
 // import requests from '@/request/request'
 
+// 引入数据转换方法
+import { arrToObj, objToArr } from '@/hooks/useDataStructure'
+
 // 定义收到的数据格式 -- 全面去除死数据
 // 一些基础的数据格式，被多次复用，可以被扩展
 // avatar数据格式
@@ -79,13 +82,18 @@ export interface ResponseType<P = object> {
   data: P
 }
 
+// 优化colums和posts的数据格式
+interface ListProps<T> {
+  [id: string]: T
+}
+
 // ***************设置仓库的数据格式*****************
 export interface GlobalDataProps {
   error: ErrorProps,
   token: string, // 令牌
   isLoading: boolean, // 是否加载
-  colums: IHomeColumData[], // 专栏卡片数据
-  posts: IPostData[], // 文章数据列表
+  colums: { data: ListProps<IHomeColumData>, currentPage: number, total: number }, // 专栏卡片数据
+  posts: { data: ListProps<IPostData>, currentPage: number, count: number, loadedColumns:string[] }, // 文章数据列表
   user: UserProps, // 用户数据
   postDetail: IPostData
 }
@@ -98,33 +106,46 @@ const store = createStore<GlobalDataProps>({
   actions: {
     // 以下的actions代码可以抽象到一个函数中
     // ****异步获取首页专栏数据
-    async fetchColumnData ({ commit }) {
+    async fetchColumnData ({ state, commit }, value = {}) {
+      const { currentPage = 1, pageSize = 6 } = value
       try {
-        const result = await reqFetchColumn()
-        commit('FETCHCOLUMNDATA', result.data)
+        // 仓库中的页数小于当前页就发送请求 或者 用户在个人专栏页刷新导致数据丢失，然后返回首页的时候，即长度小于一个pageSize时需要发送请求
+        if (state.colums.currentPage as number < currentPage || Object.keys(state.colums.data).length < pageSize) {
+          const result = await reqFetchColumn(currentPage, pageSize)
+          commit('FETCHCOLUMNDATA', result.data)
+        }
       } catch (error) {
         console.error('获取首页专栏数据失败', error)
       }
     },
-    // ****获取专栏列表数据
+    // ****获取专栏列表数据 -- 可以直接从总的专栏上去取
     // 个人专栏信息 -- 不用在此处定义传入参数的类型，因为在发送请求的函数上定义过了
-    async fetchSingleColumn ({ commit }, id:string) {
+    async fetchSingleColumn ({ state, commit }, id:string) {
       try {
-        const result = await reqFetchSingleColum(id)
-        commit('FETCHSINGLECOLUMN', result.data)
+        // 只有当仓库中没有数据，才发送请求
+        if (state.colums.total === 0) {
+          const result = await reqFetchSingleColum(id)
+          commit('FETCHSINGLECOLUMN', result.data)
+        }
       } catch (error) {
         console.error('获取个人专栏信息失败', error)
       }
     },
+
     // 个人发表文章信息 id:string, currentPage:string, pageSize:string
-    async fetchPost ({ commit }, value) {
+    async fetchPost ({ state, commit }, value) {
+      const { id, currentPage = 1, pageSize = 5 } = value
       try {
-        const result = await reqFetchPost(value)
-        commit('FETCHPOST', result.data)
+        if (!state.posts.loadedColumns.includes(id) || state.posts.currentPage as number < currentPage) { // 当仓库中已经存在当前个人的id的时候(即已请求过)，则不发送请求；或者页数发生变化的时候则也需要发送请求
+          const result = await reqFetchPost(id, currentPage, pageSize)
+          const rawData = result.data
+          commit('FETCHPOST', { rawData, id })
+        }
       } catch (error) {
         console.error('获取个人发表文章信息失败', error)
       }
     },
+
     // ****权限验证
     // 登录post请求
     async potLogin ({ commit }, value) {
@@ -188,8 +209,7 @@ const store = createStore<GlobalDataProps>({
     async deletePaper ({ commit }, id:string) {
       try {
         const result = await reqDeletePaper(id)
-        console.log('删除', result.data)
-        // commit('DELETEPAPER')
+        commit('DELETEPAPER', result.data)
       } catch (error) {
         console.error('删除文章失败', error)
       }
@@ -203,17 +223,28 @@ const store = createStore<GlobalDataProps>({
     },
     // 首页专栏
     FETCHCOLUMNDATA (state, value) {
-      state.colums = value.data.list
+      const { currentPage, count } = value.data
+      const data = arrToObj(value.data.list)
+      state.colums = { data: { ...state.colums.data, ...data }, currentPage: +currentPage, total: count }
     },
     // 个人页专栏信息
     FETCHSINGLECOLUMN (state, value) {
-      // 要转换成数组形式
-      state.colums = [value.data]
+      // 进入此处说明，此时的专栏信息已丢失，因此需要单独发送请求来获取信息，该信息没有currentPage和total, 但在此处指定了，意为让其重头再来
+      const data = arrToObj([value.data])
+      state.colums = { data: { ...state.colums.data, ...data }, currentPage: 0, total: 0 }
     },
+
     // 个人发表文章信息
     FETCHPOST (state, value) {
-      state.posts = value.data.list
+      const { rawData, id } = value
+      const { currentPage, count } = rawData.data
+      const data = arrToObj(rawData.data.list)
+      state.posts.data = { ...state.posts.data, ...data }
+      state.posts.currentPage = currentPage
+      state.posts.count = count
+      state.posts.loadedColumns.push(id)
     },
+
     // -------------------------------------------------------------
     // 登录信息获取token -- 并将token放置到本地存储，且设置到请求头中
     POSTLOGIN (state, value) {
@@ -239,7 +270,7 @@ const store = createStore<GlobalDataProps>({
     },
     // 发表文章
     POSTPAPER (state, value) {
-      state.posts.push(value)
+      state.posts.data[value._id] = value
     },
     // 请求单片文章详情
     FETCHPAPER (state, value) {
@@ -248,6 +279,10 @@ const store = createStore<GlobalDataProps>({
     // 更新文章
     PATCHPAPER (state, value) {
       state.postDetail = { ...value }
+    },
+    // 删除文章
+    DELETEPAPER (state, value) {
+      delete state.posts.data[value._id]
     }
   },
 
@@ -256,18 +291,18 @@ const store = createStore<GlobalDataProps>({
     // 初始的token从本次存储中找找看
     token: localStorage.getItem('token') || '',
     isLoading: false,
-    colums: [],
-    posts: [],
+    colums: { data: {}, currentPage: 0, total: 0 },
+    posts: { data: {}, currentPage: 0, count: 0, loadedColumns: [] },
     user: { isLogin: false },
     postDetail: {}
   },
 
   getters: {
     getColumById: (state) => (currentId:string) => {
-      return state.colums.find(c => c._id === currentId)
+      return state.colums.data[currentId]
     },
     getPostsById: (state) => (currentId:string) => {
-      return state.posts.filter(item => item.column === currentId) // colum是人
+      return objToArr(state.posts.data).filter(item => item.column === currentId) // colum是人
     }
   }
 })

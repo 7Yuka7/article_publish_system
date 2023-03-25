@@ -1,7 +1,7 @@
 <template>
   <div class="userProfile-container">
     <div class="img-container">
-      <img :src="author?  (author.avatar as ImageData).url:'../assets/R-C.jpg'" :alt="author && author.nickName">
+      <img :src="author?  author.avatar && (author.avatar as ImageData).url : '../assets/R-C.jpg'" :alt="author && author.nickName">
     </div>
     <div class="user-info">
       <p>{{ author && author.nickName }}</p>
@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType, watch } from 'vue'
 // 引入数据格式
 import { UserProps, ImageData } from '@/store'
 
@@ -23,7 +23,10 @@ export default defineComponent({
       required: true
     }
   },
-  setup () {
+  setup (props) {
+    // watch(() => props.author, () => {
+    //   console.log(props.author)
+    // })
     return {}
   }
 })

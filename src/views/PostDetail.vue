@@ -2,7 +2,7 @@
   <!-- 文章内容区域 -->
   <div class="post-detail-page">
     <article class="w-75 mx-auto mb-5 pb-3" v-if="currentPost">
-      <img :src="currentPost.image && (currentPost.image as ImageData).url" :alt="currentPost.title" class="rounded w-100 mb-4">
+      <img :src="currentPost.image && (currentPost.image as ImageData).url" :alt="currentPost.title" class="rounded w-100 mb-4" v-if="currentPost.image">
       <h2 class="mb-4">{{ currentPost.title }}</h2>
       <div class="user-profile-component border-top border-bottom py-3 mb-4 row">
         <div class="col">
@@ -107,7 +107,6 @@ export default defineComponent({
       store.dispatch('deletePaper', id)
       isShowModal.value = false
       createMessage('删除成功，2秒后跳转至个人专栏页', 'success', 1500)
-      console.log(currentPost.value)
       setTimeout(() => {
         router.push(`/columns/${authorId}`)
       }, 1600)

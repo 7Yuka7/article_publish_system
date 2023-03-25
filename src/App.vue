@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted } from 'vue'
+import { defineComponent, computed, watch } from 'vue'
 // 引入bootstrap库
 import 'bootstrap/dist/css/bootstrap.min.css'
 // 引入组件
